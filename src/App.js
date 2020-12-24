@@ -2,92 +2,84 @@ import React, { useState } from "react";
 import "./App.css";
 
 const App = () => {
-  const [state, setState] = useState({ value: { language: "EN", trackingId: "" }, show: false });
+  const [state, setState] = useState({ value: { phoneNumber: "", message: "" }, show: false });
 
   const handleChange = (event) => {
-    if (event.target.name === "language") {
-      setState({ value: { language: event.target.value, trackingId: "" }, show: true });
-    } else if (event.target.name === "trackingId") {
+    if (event.target.name === "number") {
+      setState({ value: { language: event.target.value, message: "" }, show: true });
+    } else if (event.target.name === "message") {
       setState((prevState) => ({
-        value: { language: prevState.value.language, trackingId: event.target.value },
+        value: { phoneNumber: prevState.value.phoneNumber, message: event.target.value },
         show: prevState.show,
       }));
     }
   };
-  console.log(state);
-  // const handleSubmit = (e) => {
-  //   fetch("https://outbox.rest/get/status", {
-  //       method: "POST",
-  //       body:
-  //         {
-  //           "AuthKey": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  //           "Language":`${state.value.language}`
-  //           "TrackingID": `${state.value.trackingId}`
-  //         },
-  //       headers: {
-  //           "Content-Type": "application/json"
-  //       }
-  //   })
-  //   .then(res => {
-  //     console.log(res)
-  //   })
+
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const responseData = {
+      AuthKey: "13c930c2-4f14-11ea-b0f5-42010a840313",
+      MessageType: "SMS",
+      Recipients: [
+        {
+          Recipient: `${state.value.phoneNumber}`,
+          Content: `${state.value.message}`
+        }
+      ],
+      SendAlways: 1,
+      Priority: "FAST",
+    };
+
+    fetch("http://outbox.rest/send/message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(responseData),
+      "processData": false,
+    })
+      .then(response => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   return (
     <div className="App">
       <h1 className="head">KREA Marketing Services, Inc.</h1>
       <div className="container">
-        <form action="input" /*onSubmit={handleSubmit}*/>
+        <form action="input" onSubmit={(event)=>handleSubmit(event)}>
           <div className="content">
-            <h2>Please choose the language?</h2>
+            <h2>Please enter the phone number?</h2>
             <div className="question">
               <div className="answer">
+                <label htmlFor="question-2">Please start to area code</label>
                 <input
-                  type="radio"
-                  id="question-1"
-                  name="language"
-                  value="EN"
+                  className="input"
+                  type="text"
+                  id="question-2"
+                  name="number"
                   onChange={(e) => {
                     handleChange(e);
                   }}
                 />
-                <label htmlFor="vehicle1">EN</label>
-              </div>
-              <div className="answer">
-                <input
-                  type="radio"
-                  id="question-1"
-                  name="language"
-                  value="FR"
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                />
-                <label htmlFor="vehicle2"> FR</label>
-              </div>
-              <div className="answer">
-                <input
-                  type="radio"
-                  id="question-1"
-                  name="language"
-                  value="TR"
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                />
-                <label htmlFor="vehicle3"> TR</label>
               </div>
             </div>
           </div>
           {state.show ? (
             <div className="content">
-              <h2>Please enter the tracking ID?</h2>
+              <h2>Please enter the message?</h2>
               <div className="question">
                 <div className="answer">
                   <input
-                    className="trackingId-input"
+                    className="input"
                     type="text"
                     id="question-2"
-                    name="trackingId"
+                    name="message"
                     onChange={(e) => {
                       handleChange(e);
                     }}

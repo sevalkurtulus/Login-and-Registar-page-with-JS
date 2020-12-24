@@ -44,11 +44,11 @@ body {
   text-align: center;
   width: 12rem;
   position: absolute;
-  bottom: 10rem;
+  bottom: 8rem;
   left: 11vw;
 }
 
-.trackingId-input {
+.input {
   position: relative;
   display: block;
   width: 100%;
